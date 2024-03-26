@@ -1,9 +1,9 @@
-import './App.css'
+import { Calendar } from "./components/Calendar";
 
-function App() {
+export function App() {
   return (
-    <div>Hi</div>
+    <Calendar/>
   )
 }
 
-export default App
+
