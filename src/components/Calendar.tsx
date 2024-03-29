@@ -1,13 +1,20 @@
 import { useMemo, useState } from "react";
 import {
+  addMonths,
   eachDayOfInterval,
+  endOfDay,
   endOfMonth,
   endOfWeek,
+  isBefore,
+  isSameMonth,
+  isToday,
   startOfMonth,
   startOfWeek,
+  subMonths,
 } from "date-fns";
 import "./styles.css";
 import { formatData } from "../utils/formatDate";
+import { concatClass } from "../utils/concatClass";
 
 export function Calendar() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
@@ -24,35 +31,68 @@ export function Calendar() {
       <div className="header">
         <button className="btn">Today</button>
         <div>
-          <button className="month-change-btn">&lt;</button>
-          <button className="month-change-btn">&gt;</button>
+          <button
+            className="month-change-btn"
+            onClick={() => {
+              setSelectedMonth((pre) => subMonths(pre, 1));
+            }}
+          >
+            &lt;
+          </button>
+          <button
+            className="month-change-btn"
+            onClick={() => {
+              setSelectedMonth((pre) => addMonths(pre, 1));
+            }}
+          >
+            &gt;
+          </button>
         </div>
-        <span className="month-title">June 2023</span>
+        <span className="month-title">
+          {formatData(selectedMonth, { month: "long", year: "numeric" })}
+        </span>
       </div>
       <div className="days">
-        {calendarDates.map((day,index) => (
-          <CalendarDay key={day.getTime()} day={day} showWeekName={index<7} selectedMonth={selectedMonth} />
+        {calendarDates.map((day, index) => (
+          <CalendarDay
+            key={day.getTime()}
+            day={day}
+            showWeekName={index < 7}
+            selectedMonth={selectedMonth}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-interface ICalendarDayProps{
-  day: Date,
-  showWeekName: boolean,
-  selectedMonth: Date
+interface ICalendarDayProps {
+  day: Date;
+  showWeekName: boolean;
+  selectedMonth: Date;
 }
 
-function CalendarDay({day, showWeekName, selectedMonth}: ICalendarDayProps) {
+function CalendarDay({ day, showWeekName, selectedMonth }: ICalendarDayProps) {
   return (
-    <div className="day non-month-day old-month-day">
+    <div
+      className={concatClass(
+        "day",
+        !isSameMonth(day, selectedMonth) && "non-month-day",
+        isBefore(endOfDay(day), selectedMonth) && "old-month-day"
+      )}
+    >
       <div className="day-header">
-        {showWeekName && <div className="week-name">{formatData(day, { weekday: 'short'})}</div>}
-        <div className="day-number">{formatData(day, {day: 'numeric'})}</div>
+        {showWeekName && (
+          <div className="week-name">
+            {formatData(day, { weekday: "short" })}
+          </div>
+        )}
+        <div className={concatClass("day-number", isToday(day) && "today")}>
+          {formatData(day, { day: "numeric" })}
+        </div>
         <button className="add-event-btn">+</button>
       </div>
-      <div className="events">
+      {/* <div className="events">
         <button className="all-day-event blue event">
           <div className="event-name">Short</div>
         </button>
@@ -66,7 +106,7 @@ function CalendarDay({day, showWeekName, selectedMonth}: ICalendarDayProps) {
           <div className="event-time">7am</div>
           <div className="event-name">Event Name</div>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
