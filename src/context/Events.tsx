@@ -1,24 +1,23 @@
 import { ReactNode, createContext, useState } from "react";
 import { UnionOmit } from "../utils/types";
-
-const EVENT_COLORS = ['red','green', 'blue'] as const
+import { EVENT_COLORS } from "./useEvent";
 
 type TEvent = {
-  id: string,
-  name: string,
-  color: (typeof EVENT_COLORS)[number]
-  date: Date
+  id: string;
+  name: string;
+  color: (typeof EVENT_COLORS)[number];
+  date: Date;
 } & (
-  | {allDay: false, startTime: string, endTime: string}
-  | {allDay: true, startTime?: never, endTime?: never}
-  )
+  | { allDay: false; startTime: string; endTime: string }
+  | { allDay: true; startTime?: never; endTime?: never }
+);
 
 type TEventContext = {
-  events: TEvent[]
-  addEvent: (event: UnionOmit<TEvent, 'id'>)=> void
-}
+  events: TEvent[];
+  addEvent: (event: UnionOmit<TEvent, "id">) => void;
+};
 
-const Context = createContext<TEventContext | null>(null)
+export const EventContext = createContext<TEventContext | null>(null);
 
 // const abc:Event={
 //   allDay: false,
@@ -32,15 +31,19 @@ const Context = createContext<TEventContext | null>(null)
 // console.log(abc)
 
 type TEventProviderProps = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
-function EventProvider({children}: TEventProviderProps) {
-  const [events, setEvents] = useState<TEvent[]>([])
+export function EventProvider({ children }: TEventProviderProps) {
+  const [events, setEvents] = useState<TEvent[]>([]);
 
-  function addEvent(event: UnionOmit<TEvent, 'id'>) {
-    setEvents(pre=> [...pre, {...event, id: crypto.randomUUID()}])
+  function addEvent(event: UnionOmit<TEvent, "id">) {
+    setEvents((pre) => [...pre, { ...event, id: crypto.randomUUID() }]);
   }
 
-  return <Context.Provider value={{events, addEvent}}>{children}</Context.Provider>
+  return (
+    <EventContext.Provider value={{ events, addEvent }}>
+      {children}
+    </EventContext.Provider>
+  );
 }
