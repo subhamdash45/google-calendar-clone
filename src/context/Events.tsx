@@ -15,6 +15,8 @@ export type TEvent = {
 type TEventContext = {
   events: TEvent[]
   addEvent: (event: UnionOmit<TEvent, "id">) => void
+  updateEvent: (id: string, event: UnionOmit<TEvent, "id">) => void
+  deleteEvent: (id: string) => void
 }
 
 export const EventContext = createContext<TEventContext | null>(null)
@@ -37,12 +39,25 @@ type TEventProviderProps = {
 export function EventProvider({ children }: TEventProviderProps) {
   const [events, setEvents] = useState<TEvent[]>([])
 
-  function addEvent(event: UnionOmit<TEvent, "id">) {
-    setEvents((pre) => [...pre, { ...event, id: crypto.randomUUID() }])
+  function addEvent(eventDetails: UnionOmit<TEvent, "id">) {
+    setEvents((pre) => [...pre, { ...eventDetails, id: crypto.randomUUID() }])
+  }
+
+  function updateEvent(id: string, eventDetails: UnionOmit<TEvent, "id">) {
+    const updatedEvents = events.map((event) => {
+      return event.id == id ? { id, ...eventDetails } : event
+    })
+    setEvents(updatedEvents)
+  }
+
+  function deleteEvent(id: string) {
+    setEvents((pre) => pre.filter((event) => event.id !== id))
   }
 
   return (
-    <EventContext.Provider value={{ events, addEvent }}>
+    <EventContext.Provider
+      value={{ events, addEvent, updateEvent, deleteEvent }}
+    >
       {children}
     </EventContext.Provider>
   )

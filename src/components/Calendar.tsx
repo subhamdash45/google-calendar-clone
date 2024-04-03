@@ -75,28 +75,40 @@ export function Calendar() {
 }
 
 function CalendarEvent({ event }: { event: TEvent }) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const { updateEvent, deleteEvent } = useEvent()
   return (
-    <button
-      className={concatClass(
-        "event",
-        event.color,
-        event.allDay && "all-day-event"
-      )}
-    >
-      {event.allDay ? (
-        <div className="event-name">{event.name}</div>
-      ) : (
-        <>
-          <div className={concatClass("color-dot", event.color)}></div>
-          <div className="event-time">
-            {formatData(parse(event.startTime, "HH:mm", event.date), {
-              timeStyle: "short",
-            })}
-          </div>
+    <>
+      <button
+        className={concatClass(
+          "event",
+          event.color,
+          event.allDay && "all-day-event"
+        )}
+        onClick={() => setIsEditModalOpen(true)}
+      >
+        {event.allDay ? (
           <div className="event-name">{event.name}</div>
-        </>
-      )}
-    </button>
+        ) : (
+          <>
+            <div className={concatClass("color-dot", event.color)}></div>
+            <div className="event-time">
+              {formatData(parse(event.startTime, "HH:mm", event.date), {
+                timeStyle: "short",
+              })}
+            </div>
+            <div className="event-name">{event.name}</div>
+          </>
+        )}
+      </button>
+      <EventFormModal
+        event={event}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={(eventDetails) => updateEvent(event.id, eventDetails)}
+        onDelete={() => deleteEvent(event.id)}
+      />
+    </>
   )
 }
 
@@ -257,7 +269,13 @@ function EventFormModal({
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor={`${formId}-name`}>Name</label>
-            <input required type="text" id={`${formId}-name`} ref={nameRef} />
+            <input
+              required
+              type="text"
+              id={`${formId}-name`}
+              ref={nameRef}
+              defaultValue={event?.name}
+            />
           </div>
           <div className="form-group checkbox">
             <input
@@ -289,6 +307,7 @@ function EventFormModal({
                 disabled={isAllDayChecked}
                 min={startTime}
                 ref={endTimeRef}
+                defaultValue={event?.endTime}
               />
             </div>
           </div>
