@@ -21,6 +21,7 @@ import { Modal, TModalProps } from "./Modal"
 import { UnionOmit } from "../utils/types"
 import { TEvent } from "../context/Events"
 import { EVENT_COLORS, useEvent } from "../context/useEvent"
+import { OverFlowContainer } from "./OverFlowContainer"
 
 export function Calendar() {
   const [selectedMonth, setSelectedMonth] = useState(new Date())
@@ -36,7 +37,9 @@ export function Calendar() {
   return (
     <div className="calendar">
       <div className="header">
-        <button className="btn">Today</button>
+        <button className="btn" onClick={() => setSelectedMonth(new Date())}>
+          Today
+        </button>
         <div>
           <button
             className="month-change-btn"
@@ -126,6 +129,8 @@ function CalendarDay({
   events,
 }: ICalendarDayProps) {
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState(false)
+  const [isViewMoreEventModalOpen, setIsViewMoreEventModalOpen] =
+    useState(false)
   const { addEvent } = useEvent()
   // function addEvent(event: UnionOmit<TEvent, "id">): void {
   //   throw new Error("Function not implemented.")
@@ -172,11 +177,27 @@ function CalendarDay({
         </button>
       </div>
       {Boolean(sortedEvent.length) && (
-        <div className="events">
-          {sortedEvent.map((event) => (
-            <CalendarEvent key={event.id} event={event} />
-          ))}
-        </div>
+        <OverFlowContainer
+          className="events"
+          items={sortedEvent}
+          getKey={(event) => event.id}
+          renderItem={(event) => <CalendarEvent event={event} />}
+          renderOverFlow={(amount) => (
+            <>
+              <button
+                className="events-view-more-btn"
+                onClick={() => setIsViewMoreEventModalOpen(true)}
+              >
+                +{amount} More
+              </button>
+              <ViewMoreCalendarEventsModal
+                events={sortedEvent}
+                isOpen={isViewMoreEventModalOpen}
+                onClose={() => setIsViewMoreEventModalOpen(false)}
+              />
+            </>
+          )}
+        />
       )}
 
       <EventFormModal
@@ -186,6 +207,32 @@ function CalendarDay({
         onSubmit={addEvent}
       />
     </div>
+  )
+}
+
+type TViewMoreCalendarEventsModalProps = {
+  events: TEvent[]
+} & Omit<TModalProps, "children">
+
+function ViewMoreCalendarEventsModal({
+  events,
+  ...modalProps
+}: TViewMoreCalendarEventsModalProps) {
+  if (events.length === 0) return null
+  return (
+    <Modal {...modalProps}>
+      <div className="modal-title">
+        <small>{formatData(events[0].date, { dateStyle: "short" })}</small>
+        <button className="close-btn" onClick={() => modalProps.onClose()}>
+          &times;
+        </button>
+      </div>
+      <div className="events">
+        {events.map((event) => (
+          <CalendarEvent event={event} key={event.id} />
+        ))}
+      </div>
+    </Modal>
   )
 }
 
