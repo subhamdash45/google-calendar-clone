@@ -18,8 +18,6 @@ export function OverFlowContainer<T>({
   const [overflowAmount, setOverflowAmount] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  console.log("hete")
-
   useLayoutEffect(() => {
     if (containerRef.current == null) return
 
@@ -43,7 +41,6 @@ export function OverFlowContainer<T>({
         if (containerElement.scrollHeight <= containerElement.clientHeight)
           break
 
-        console.log("sksk")
         element.style.display = "none"
         overflowElement?.style.removeProperty("display")
         overflowCount = children.length - i

@@ -3,7 +3,7 @@ import { TEvent } from "../context/Events"
 import { UnionOmit } from "../utils/types"
 import { Modal, TModalProps } from "./Modal"
 import { formatData } from "../utils/formatDate"
-import { EVENT_COLORS } from "../context/useEvent"
+import { EVENT_COLORS } from "../utils/useEvent"
 
 type EventFormModalProps = {
   onSubmit: (event: UnionOmit<TEvent, "id">) => void

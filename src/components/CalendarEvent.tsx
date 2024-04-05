@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { TEvent } from "../context/Events"
-import { useEvent } from "../context/useEvent"
+import { useEvent } from "../utils/useEvent"
 import { concatClass } from "../utils/concatClass"
 import { formatData } from "../utils/formatDate"
 import { parse } from "date-fns"

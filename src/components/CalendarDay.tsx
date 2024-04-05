@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { TEvent } from "../context/Events"
-import { useEvent } from "../context/useEvent"
+import { useEvent } from "../utils/useEvent"
 import { concatClass } from "../utils/concatClass"
 import { endOfDay, isBefore, isSameMonth, isToday } from "date-fns"
 import { formatData } from "../utils/formatDate"
@@ -26,9 +26,7 @@ export function CalendarDay({
   const [isViewMoreEventModalOpen, setIsViewMoreEventModalOpen] =
     useState(false)
   const { addEvent } = useEvent()
-  // function addEvent(event: UnionOmit<TEvent, "id">): void {
-  //   throw new Error("Function not implemented.")
-  // }
+
   const sortedEvent = useMemo(() => {
     const timeToNumber = (time: string) => parseFloat(time.replace(":", "."))
 
@@ -51,7 +49,7 @@ export function CalendarDay({
       className={concatClass(
         "day",
         !isSameMonth(day, selectedMonth) && "non-month-day",
-        isBefore(endOfDay(day), selectedMonth) && "old-month-day"
+        isBefore(endOfDay(day), new Date()) && "old-month-day"
       )}
     >
       <div className="day-header">
