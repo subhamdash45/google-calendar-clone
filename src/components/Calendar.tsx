@@ -11,7 +11,7 @@ import {
 } from "date-fns"
 import "./styles.css"
 import { formatData } from "../utils/formatDate"
-import { useEvent } from "../context/useEvent"
+import { useEvent } from "../utils/useEvent"
 import { CalendarDay } from "./CalendarDay"
 
 export function Calendar() {

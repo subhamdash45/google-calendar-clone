@@ -1,6 +1,7 @@
-import { ReactNode, createContext, useEffect, useState } from "react"
+import { ReactNode, createContext } from "react"
 import { UnionOmit } from "../utils/types"
-import { EVENT_COLORS } from "./useEvent"
+import { EVENT_COLORS } from "../utils/useEvent"
+import { useLocalStorage } from "../hook/localStorage"
 
 export type TEvent = {
   id: string
@@ -20,17 +21,6 @@ type TEventContext = {
 }
 
 export const EventContext = createContext<TEventContext | null>(null)
-
-// const abc:Event={
-//   allDay: false,
-//   name: 'sjsdj',
-//   id: 'djjf',
-//   color: 'green',
-//   date: new Date(),
-//   startTime: 'ffkf',
-//   endTime: 'djfjf'
-// }
-// console.log(abc)
 
 type TEventProviderProps = {
   children: ReactNode
@@ -61,22 +51,4 @@ export function EventProvider({ children }: TEventProviderProps) {
       {children}
     </EventContext.Provider>
   )
-}
-
-function useLocalStorage(key: string, initialValue: TEvent[]) {
-  const [value, setValue] = useState<TEvent[]>(() => {
-    const jsonValue = localStorage.getItem(key)
-    if (jsonValue == null) return initialValue
-
-    return (JSON.parse(jsonValue) as TEvent[]).map((event) => {
-      if (event.date instanceof Date) return event
-      return { ...event, date: new Date(event.date) }
-    })
-  })
-
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value))
-  }, [key, value])
-
-  return [value, setValue] as const
 }
